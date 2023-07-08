@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Card Manager System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+
+<body>
+  <style>
+    /* Nasconde le frecce dello spinner nei campi number */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      /* display: none; <- Crashes Chrome on hover */
+      -webkit-appearance: none;
+      margin: 0;
+      /* <-- Apparently some margin are still there even though it's hidden */
+    }
+  </style>
+  <nav class="navbar navbar-expand-lg bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand text-dark" th:ref="#">Card Management System</a>
+      <button class="navbar-toggler bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active text-dark" aria-current="page" th:href="@{/index}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" th:href="@{/searchcard}">Verifica Credito</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" th:href="@{/logout}">Logout</a>
+        </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <br /><br /><br />
+  <div class="container">
+    <div class="row col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="text-center">Effettua una transazione</h2>
+        </div>
+        <div th:if="${param.success}">
+          <div class="alert alert-info">
+            Trovata!
+          </div>
+        </div>
+        <div class="card-body">
+          <form method="post" th:action="@{/operation}">
+            <label class="form-label" for="cnumer">Codice della carta:</label>
+            <input type="number" class="form-control" id="cnumber" name="cnumber"
+              placeholder="Inserisci il codice della carta" />
+            <br>
+            <label class="form-label" for="amount">Importo dell'operazione (in &#8364;):</label>
+            <input type="number" class="form-control" id="amount" name="amount" placeholder="Inserisci l'importo"
+              min="1" max="10000" step="0.01" />
+            <div class="text-center">
+              <button type="submit" class="btn btn-success mt-3 mb-3" name="recharge" value="recharge">Ricarica</button>
+              <button type="submit" class="btn btn-danger mt-3 mb-3" name="payment" value="payment">Addebito</button>
+            </div>
+            <div th:if="${sellerBlocked}" class="alert alert-danger" role="alert">
+              Questo venditore è attualmente bloccato, impossibile effettuare l'operazione!
+            </div>
+            <div th:if="${errorNotFound}" class="alert alert-danger" role="alert">
+              Questa carta non esiste, impossibile effettuare l'operazione!
+            </div>
+            <div th:if="${failure}" class="alert alert-danger" role="alert">
+              Questa carta attualmente risulta bloccata, impossibile effettuare l'operazione!
+            </div>
+            <div th:if="${troppisoldi}" class="alert alert-danger" role="alert">
+              Stai superando i limiti della carta, impossibile effettuare l'operazione!
+            </div>
+            <div th:if="${saldoinsufficente}" class="alert alert-danger" role="alert">
+              Il saldo della carta è insufficente, impossibile effettuare l'operazione!
+            </div>
+            <div class="container" th:if="${success}">
+
+              <div class="container">
+                <div class="row col-md-10">
+                  <h2>Dati della carta aggiornati</h2>
+                </div>
+                <table class="table table-bordered table-hover">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Email Intestatario</th>
+                      <th>Numero carta</th>
+                      <th>Saldo in &#8364;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <td th:text="${email_intestatario}"></td>
+                    <td th:text="${cnumber}"></td>
+                    <td th:text="${saldo}"></td>
+
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
